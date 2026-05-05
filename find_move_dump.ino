@@ -117,7 +117,7 @@ void loop() {
 
 }
 
-void doServoStuff(int servoNo, float degree, int delayTime) {
+void doServoStuff(int servoNo, float degree, int delayTime) { // Equating it to 0 means the deafult delay is 0, remove if it stops working
     if (servoNo == 1) {
       armServo1.write(degree);
     } 
