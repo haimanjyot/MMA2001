@@ -6,13 +6,21 @@
 
 //maybe write a function for the correctiooffset, but am also hardcoding it
 
+//4 servos, 2 for the arm, 1 for the claw, and 1 for the dumping mechanism.
 
+// Figure out servo pins
 
 
 
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
+#include <Servo.h>
+
+Servo armServo1;
+Servo armServo2;
+Servo clawServo;
+Servo dumpingServo;
 
 //M1
 const int dirA = 7;
@@ -22,7 +30,13 @@ const int pwmA = 6;
 //M1
 const int dirB = 8;    
 const int pwmB = 3;    
-//const int brakeB = 8;   
+//const int brakeB = 8;
+
+//Servos
+const int armServo1Pin = 2;
+const int armServo2Pin = 3;
+const int clawServoPin = 4;
+const int dumpingServoPin = 5;
 
 const int buttonPin = 22;
 
@@ -61,6 +75,11 @@ void setup() {
 
   pinMode(buttonPin, INPUT_PULLUP);
 
+  armServo1.attach(armServo1Pin);
+  armServo2.attach(armServo2Pin);
+  clawServo.attach(clawServoPin);
+  dumpingServo.attach(dumpingServoPin);
+
   Serial.begin(115200);
   
   if (!mpu.begin()) {
@@ -96,6 +115,23 @@ void setup() {
 
 void loop() {
 
+}
+
+void doServoStuff(int servoNo, float degree, int delayTime) {
+    if (servoNo == 1) {
+      armServo1.write(degree);
+    } 
+    else if (servoNo == 2) {
+      armServo2.write(degree);
+    } 
+    else if (servoNo == 3) {
+      clawServo.write(degree);
+    } 
+    else if (servoNo == 4) {
+      dumpingServo.write(degree);
+    }
+    
+    delay(delayTime);
 }
 
 void navigateRamp(float rampDistance_cm) {
