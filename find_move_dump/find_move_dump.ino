@@ -128,6 +128,13 @@ void setup() {
     moveForwardUntilBump(10.0, slowSpeed);
   }
 
+  pickupRocks();
+
+  //add code to move back in front of the ramp, using the distance to the dumpzone that we will get from the finding rocks code, for now just hardcode it and turn left, ie face ramp
+  backward(1000); //calculate this time using the distance to the dumpzone
+  turnLeft(TIME_FOR_90_DEG);
+
+
   navigateRamp(RAMP_LENGTH);
 }
 
@@ -135,7 +142,15 @@ void loop() {
 
 }
 
-void doServoStuff(int servoNo, float degree, int delayTime = 0) { // Equating it to 0 means the deafult delay is 0, remove if it stops working
+
+void pickupRocks() { // initial position is all arms are folded down, ie 0deg, and the claw is open
+  doServoStuff(1, 60, 500); //tilt arm up, change values as needed
+  doServoStuff(2, 30, 500); //extend arm out, change values as needed
+  doServoStuff(3, 20, 500); //close claw, change values
+
+}
+
+void doServoStuff(int servoNo, float degree, int delayTime) { // Equating it to 0 means the deafult delay is 0, remove if it stops working
     if (servoNo == 1) {
       armServo1.write(degree);
     } 
