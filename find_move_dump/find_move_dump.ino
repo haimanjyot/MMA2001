@@ -10,8 +10,6 @@
 
 // Figure out servo pins
 
-
-
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
@@ -40,6 +38,12 @@ const int dumpingServoPin = 5;
 
 const int buttonPin = 22;
 
+// Ultrasonic
+const int FrontTrigPin = 9;
+const int FrontEchoPin = 10;
+const int LeftTrigPin = 11;
+const int LeftEchoPin = 12;
+
 Adafruit_MPU6050 mpu;
 //VCC to 5V
 //GND to GND
@@ -66,6 +70,11 @@ const int driveSpeed = 150;
 const int slowSpeed = 80;
 const int correctionOffset = 40;
 
+// Hopper finding variables
+float duration = 0;
+float distance = 0;
+const int tolerance;
+
 void setup() {
   pinMode(dirA, OUTPUT);
   pinMode(pwmA, OUTPUT);
@@ -79,6 +88,15 @@ void setup() {
   armServo2.attach(armServo2Pin);
   clawServo.attach(clawServoPin);
   dumpingServo.attach(dumpingServoPin);
+
+  // Ultrasonic pins
+  pinMode(LeftTrigPin, INPUT);
+  pinMode(LeftEchoPin, OUTPUT);
+  pinMode(FrontTrigPin, INPUT);
+  pinMode(FrontEchoPin, OUTPUT);
+
+  digitalWrite(LeftTrigPin, LOW);
+  digitalWrite(FrontTrigPin, LOW);
 
   Serial.begin(115200);
   
@@ -266,4 +284,59 @@ void stopMotors() {
   analogWrite(pwmB, 0); 
 
   delay(100);
+}
+
+void get_hopper_centre() {
+  // Distance variables
+  int front_dist_raw = 0;
+  int left_dist_raw = 0;
+  int front_dist = 0;
+  int left_dist = 0;  
+
+  int min_left_dist = 5;
+  int min_front_dist = 5;
+
+  bool left_centred = false;
+  bool front_centred = false;
+
+  // Cycle through until it's centred
+  while (true) {
+    // Get distance
+    digitalWrite(LeftTrigPin, HIGH);
+    digitalWrite(FrontTrigPin, HIGH);
+    delay(10);
+    digitalWrite(LeftTrigPin, LOW);
+    digitalWrite(FrontTrigPin, LOW);
+
+    // Process (Maybe add smoothing?)
+    front_dist_raw = pulseIn(FrontTrigPin, HIGH);
+    front_dist = (front_dist_raw * 0.034)/2;
+
+    left_dist_raw = pulseIn(LeftTrigPin, HIGH);
+    left_dist = (left_dist_raw * 0.034)/2;
+
+    // Check front sensor distance
+    if (front_dist >= (min_front_dist + tolerance)) {
+      Serial.println("Moving forwards");
+    } 
+    else if (front_dist <= (min_front_dist - tolerance)) {
+      Serial.println("Moving backwards") ;
+    }
+    else {
+      Serial.println("Y axis centred");
+      front_centred = !front_centred;
+    }
+
+    // Check left sensor distance
+    if (left_dist >= (min_left_dist + tolerance)) {
+      Serial.println("Moving right");
+    } 
+    else if (left_dist <= (min_left_dist - tolerance)) {
+      Serial.println("Moving left");
+    }
+    else {
+      Serial.println("x axis centred");
+      left_centred = !left_centred;
+    }
+  }
 }
