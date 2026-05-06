@@ -110,6 +110,13 @@ void setup() {
     moveForwardUntilBump(10.0, slowSpeed);
   }
 
+  pickupRocks();
+
+  //add code to move back in front of the ramp, using the distance to the dumpzone that we will get from the finding rocks code, for now just hardcode it and turn left, ie face ramp
+  backward(1000); //calculate this time using the distance to the dumpzone
+  turnLeft(TIME_FOR_90_DEG);
+
+
   navigateRamp(RAMP_LENGTH);
 }
 
