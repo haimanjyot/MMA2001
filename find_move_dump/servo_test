@@ -1,0 +1,123 @@
+#include <Servo.h>
+ 
+Servo servo1;
+Servo servo2;
+Servo servo3;
+ 
+const int SERVO1_PIN = 9;
+const int SERVO2_PIN = 10;
+const int SERVO3_PIN = 11;
+ 
+int servo1Angle = 135;
+int servo2Angle = 135;
+int servo3Angle = 90;
+ 
+void setup() {
+  Serial.begin(9600);
+ 
+  servo1.attach(SERVO1_PIN);
+  servo2.attach(SERVO2_PIN);
+  servo3.attach(SERVO3_PIN);
+ 
+  servo1.writeMicroseconds(map(servo1Angle, 0, 270, 500, 2500));
+  servo2.writeMicroseconds(map(servo2Angle, 0, 270, 500, 2500));
+  servo3.write(servo3Angle);
+ 
+  Serial.println("Commands:");
+  Serial.println("Servo 1/2: servoNumber angle");
+  Serial.println("Example: 1 180");
+  Serial.println("Example: 2 90");
+  Serial.println();
+  Serial.println("Servo 3: 3 speed time_ms");
+  Serial.println("Example: 3 50 2000");
+  Serial.println("Example: 3 -50 2000");
+}
+ 
+void loop() {
+  if (Serial.available() > 0) {
+ 
+    int servoNumber = Serial.parseInt();
+ 
+    if (servoNumber == 1) {
+      int angle = Serial.parseInt();
+ 
+      if (angle >= 0 && angle <= 270) {
+        servo1Angle = angle;
+        servo1.writeMicroseconds(map(servo1Angle, 0, 270, 500, 2500));
+ 
+        Serial.print("Servo 1 angle: ");
+        Serial.println(servo1Angle);
+      } else {
+        Serial.println("Invalid angle for servo 1. Use 0-270.");
+      }
+    }
+ 
+    else if (servoNumber == 2) {
+      int angle = Serial.parseInt();
+ 
+      if (angle >= 0 && angle <= 270) {
+        servo2Angle = angle;
+        servo2.writeMicroseconds(map(servo2Angle, 0, 270, 500, 2500));
+ 
+        Serial.print("Servo 2 angle: ");
+        Serial.println(servo2Angle);
+      } else {
+        Serial.println("Invalid angle for servo 2. Use 0-270.");
+      }
+    }
+ 
+    else if (servoNumber == 3) {
+      int speedValue = Serial.parseInt();
+      int runTime = Serial.parseInt();
+ 
+      if (speedValue >= -100 && speedValue <= 100 && speedValue != 0 && runTime > 0) {
+        moveServo3BySpeedTime(speedValue, runTime);
+      } else {
+        Serial.println("Invalid servo 3 command.");
+        Serial.println("Use: 3 speed time_ms");
+        Serial.println("Example: 3 50 2000");
+        Serial.println("Example: 3 -50 2000");
+      }
+    }
+ 
+    else {
+      Serial.println("Invalid servo number. Use 1, 2, or 3.");
+    }
+ 
+    while (Serial.available() > 0) {
+      Serial.read();
+    }
+  }
+}
+ 
+void moveServo3BySpeedTime(int speedValue, int runTime) {
+ 
+  Serial.print("Servo 3 speed: ");
+  Serial.print(speedValue);
+  Serial.print(" for ");
+  Serial.print(runTime);
+  Serial.println(" ms");
+ 
+  int stepDelay = map(abs(speedValue), 1, 100, 40, 3);
+ 
+  unsigned long startTime = millis();
+ 
+  while (millis() - startTime < runTime) {
+ 
+    if (speedValue > 0) {
+      servo3Angle += 1;
+    } else {
+      servo3Angle -= 1;
+    }
+ 
+    servo3Angle = constrain(servo3Angle, 0, 180);
+ 
+    servo3.write(servo3Angle);
+ 
+    delay(stepDelay);
+  }
+ 
+  Serial.print("Servo 3 final angle: ");
+  Serial.println(servo3Angle);
+}
+ 
