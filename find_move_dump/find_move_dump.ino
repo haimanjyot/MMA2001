@@ -1,4 +1,4 @@
-@ -1,357 +0,0 @@
+
 //hardcoded finding and moving to the dump zone and then stopping using just functions and setup.
 //need to code finding and collecting rocks
 //need to hardcode moving back in front of the dumpzone, for which the accurate distance value we will get from how far the dump zone was.
