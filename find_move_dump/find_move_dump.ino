@@ -24,11 +24,11 @@ Servo dumpingServo;
 //M1
 const int dirA = 7;
 const int pwmA = 6;
-//const int brakeA = 9;   
+//const int brakeA = 9;
 
 //M1
-const int dirB = 8;    
-const int pwmB = 3;    
+const int dirB = 8;
+const int pwmB = 3;
 //const int brakeB = 8;
 
 //Servos
@@ -57,15 +57,15 @@ enum RobotPhase {
 };
 RobotPhase currentPhase = APPROACHING;
 
-const float PITCH_IMPACT_THRESHOLD = 1.5; //rad/s --- if greater than this, then we have hit the ramp, has to be changed accordingly
-const float ROLL_IMPACT_THRESHOLD = 0.8;  //rad/s --- if greater than this, we hit the ramp at an angle, has to be changed accordingly
-const float ROLL_CORRECTION_TOLERANCE = 2.0; //degrees --- degrees of centre, has to be changed accordingly
+const float PITCH_IMPACT_THRESHOLD = 1.5;     //rad/s --- if greater than this, then we have hit the ramp, has to be changed accordingly
+const float ROLL_IMPACT_THRESHOLD = 0.8;      //rad/s --- if greater than this, we hit the ramp at an angle, has to be changed accordingly
+const float ROLL_CORRECTION_TOLERANCE = 2.0;  //degrees --- degrees of centre, has to be changed accordingly
 
-const unsigned long TIME_FOR_90_DEG = 600; //Unsure about this
-const float TIME_PER_CM = 50.0; //Unsure about this
-const float RAMP_TIME_PER_CM = 70.0; //also unsure aabout this, this is higher cuz gravity
+const unsigned long TIME_FOR_90_DEG = 600;  //Unsure about this
+const float TIME_PER_CM = 50.0;             //Unsure about this
+const float RAMP_TIME_PER_CM = 70.0;        //also unsure aabout this, this is higher cuz gravity
 
-const float RAMP_LENGTH = 100.0; //unsure about this
+const float RAMP_LENGTH = 100.0;  //unsure about this
 
 const int driveSpeed = 150;
 const int slowSpeed = 80;
@@ -79,7 +79,7 @@ const int tolerance;
 void setup() {
   pinMode(dirA, OUTPUT);
   pinMode(pwmA, OUTPUT);
-  
+
   pinMode(dirB, OUTPUT);
   pinMode(pwmB, OUTPUT);
 
@@ -100,12 +100,12 @@ void setup() {
   digitalWrite(FrontTrigPin, LOW);
 
   Serial.begin(115200);
-  
+
   if (!mpu.begin()) {
     Serial.println("Failed to find MPU6050.");
-    while (1) { 
+    while (1) {
       delay(10);
-      }
+    }
   }
 
   // Set sensor ranges
@@ -119,7 +119,7 @@ void setup() {
   analogWrite(pwmB, 0);
 
   delay(2000);
-  
+
   turnRight(TIME_FOR_90_DEG);
   delay(500);
 
@@ -132,7 +132,7 @@ void setup() {
   pickupRocks();
 
   //add code to move back in front of the ramp, using the distance to the dumpzone that we will get from the finding rocks code, for now just hardcode it and turn left, ie face ramp
-  backward(1000); //calculate this time using the distance to the dumpzone
+  backward(1000);  //calculate this time using the distance to the dumpzone
   turnLeft(TIME_FOR_90_DEG);
 
 
@@ -140,32 +140,27 @@ void setup() {
 }
 
 void loop() {
-
 }
 
 
-void pickupRocks() { // initial position is all arms are folded down, ie 0deg, and the claw is open
-  doServoStuff(1, 60, 500); //tilt arm up, change values as needed
-  doServoStuff(2, 30, 500); //extend arm out, change values as needed
-  doServoStuff(3, 20, 500); //close claw, change values
-
+void pickupRocks() {         // initial position is all arms are folded down, ie 0deg, and the claw is open
+  doServoStuff(1, 60, 500);  //tilt arm up, change values as needed
+  doServoStuff(2, 30, 500);  //extend arm out, change values as needed
+  doServoStuff(3, 20, 500);  //close claw, change values
 }
 
-void doServoStuff(int servoNo, float degree, int delayTime) { // Equating it to 0 means the deafult delay is 0, remove if it stops working
-    if (servoNo == 1) {
-      armServo1.write(degree);
-    } 
-    else if (servoNo == 2) {
-      armServo2.write(degree);
-    } 
-    else if (servoNo == 3) {
-      clawServo.write(degree);
-    } 
-    else if (servoNo == 4) {
-      dumpingServo.write(degree);
-    }
-    
-    delay(delayTime);
+void doServoStuff(int servoNo, float degree, int delayTime) {  // Equating it to 0 means the deafult delay is 0, remove if it stops working
+  if (servoNo == 1) {
+    armServo1.write(degree);
+  } else if (servoNo == 2) {
+    armServo2.write(degree);
+  } else if (servoNo == 3) {
+    clawServo.write(degree);
+  } else if (servoNo == 4) {
+    dumpingServo.write(degree);
+  }
+
+  delay(delayTime);
 }
 
 void navigateRamp(float rampDistance_cm) {
@@ -175,41 +170,39 @@ void navigateRamp(float rampDistance_cm) {
   //drive straight until ramp detected
   while (!rampDetected) {
     mpu.getEvent(&a, &g, &temp);
-    
+
     setMotorsContinuous(driveSpeed, driveSpeed);
 
     if (abs(g.gyro.y) > PITCH_IMPACT_THRESHOLD) {
       //hit the ramp, no need to do anything here
-      
+
       if (abs(g.gyro.x) > ROLL_IMPACT_THRESHOLD) {
-         //hit the ramp at angle, do some corrections
-      } 
-      
+        //hit the ramp at angle, do some corrections
+      }
+
       rampDetected = true;
       delay(300);
     }
-    delay(20); 
+    delay(20);
   }
 
   //climbing now
-  
+
   unsigned long travelTime = RAMP_TIME_PER_CM * rampDistance_cm;
   unsigned long startTime = millis();
 
   while (millis() - startTime < travelTime) {
     mpu.getEvent(&a, &g, &temp);
-    float absoluteRoll = atan2(a.acceleration.y, a.acceleration.z) * 180.0 / PI; //THIS DEPEDNS ON HOW WE MOUNT THE SENSOR
-    
+    float absoluteRoll = atan2(a.acceleration.y, a.acceleration.z) * 180.0 / PI;  //THIS DEPEDNS ON HOW WE MOUNT THE SENSOR
+
     if (absoluteRoll > ROLL_CORRECTION_TOLERANCE) {
       setMotorsContinuous(driveSpeed - correctionOffset, driveSpeed + correctionOffset);
-    } 
-    else if (absoluteRoll < -ROLL_CORRECTION_TOLERANCE) {
+    } else if (absoluteRoll < -ROLL_CORRECTION_TOLERANCE) {
       setMotorsContinuous(driveSpeed + correctionOffset, driveSpeed - correctionOffset);
-    } 
-    else {
+    } else {
       setMotorsContinuous(driveSpeed, driveSpeed);
     }
-    
+
     delay(20);
   }
 
@@ -218,9 +211,9 @@ void navigateRamp(float rampDistance_cm) {
 
 //this one is used in the loop becuase this has no delays
 void setMotorsContinuous(int speedA, int speedB) {
-  digitalWrite(dirA, HIGH); 
+  digitalWrite(dirA, HIGH);
   digitalWrite(dirB, HIGH);
-  
+
   analogWrite(pwmA, speedA);
   analogWrite(pwmB, speedB);
 }
@@ -276,7 +269,7 @@ void backward(long time) {
 bool moveForwardUntilBump(float distance_cm, int speed) {
   digitalWrite(dirA, HIGH);
   digitalWrite(dirB, HIGH);
-  
+
   analogWrite(pwmA, speed);
   analogWrite(pwmB, speed);
 
@@ -284,20 +277,20 @@ bool moveForwardUntilBump(float distance_cm, int speed) {
   unsigned long startTime = millis();
 
   while (millis() - startTime < travelTime) {
-    
+
     if (digitalRead(buttonPin) == LOW) {
       stopMotors();
       return true;
     }
   }
-  
+
   stopMotors();
-  return false; 
+  return false;
 }
 
 void stopMotors() {
   analogWrite(pwmA, 0);
-  analogWrite(pwmB, 0); 
+  analogWrite(pwmB, 0);
 
   delay(100);
 }
@@ -307,7 +300,7 @@ void get_hopper_centre() {
   int front_dist_raw = 0;
   int left_dist_raw = 0;
   int front_dist = 0;
-  int left_dist = 0;  
+  int left_dist = 0;
 
   int min_left_dist = 5;
   int min_front_dist = 5;
@@ -326,19 +319,17 @@ void get_hopper_centre() {
 
     // Process (Maybe add smoothing?)
     front_dist_raw = pulseIn(FrontTrigPin, HIGH);
-    front_dist = (front_dist_raw * 0.034)/2;
+    front_dist = (front_dist_raw * 0.034) / 2;
 
     left_dist_raw = pulseIn(LeftTrigPin, HIGH);
-    left_dist = (left_dist_raw * 0.034)/2;
+    left_dist = (left_dist_raw * 0.034) / 2;
 
     // Check front sensor distance
     if (front_dist >= (min_front_dist + tolerance)) {
       Serial.println("Moving forwards");
-    } 
-    else if (front_dist <= (min_front_dist - tolerance)) {
-      Serial.println("Moving backwards") ;
-    }
-    else {
+    } else if (front_dist <= (min_front_dist - tolerance)) {
+      Serial.println("Moving backwards");
+    } else {
       Serial.println("Y axis centred");
       front_centred = !front_centred;
     }
@@ -346,11 +337,9 @@ void get_hopper_centre() {
     // Check left sensor distance
     if (left_dist >= (min_left_dist + tolerance)) {
       Serial.println("Moving right");
-    } 
-    else if (left_dist <= (min_left_dist - tolerance)) {
+    } else if (left_dist <= (min_left_dist - tolerance)) {
       Serial.println("Moving left");
-    }
-    else {
+    } else {
       Serial.println("x axis centred");
       left_centred = !left_centred;
     }
