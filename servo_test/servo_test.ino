@@ -10,7 +10,10 @@ Servo servo3;
 /*
 Offset for servo 1 is around 20
 Offset for servo 2 is around 10
-Offset for servo 3 is around something
+
+With servo 3 and 4, we need to play with the speed and duration values
+
+In order to extend the scooper, we need to go clockwise (ie. value from 0-90)
 */
 const int SERVO1_PIN = 9;
 const int SERVO2_PIN = 10;
@@ -71,18 +74,23 @@ void loop() {
 }
 
 void setArmClosed() {
-  setArmPosition(190, 210, 0);
+  setArmPosition(190, 210);
+  delay(100);
 }
 
 void pickUpRocks() {
-  setArmPosition(20, 210, 90);
-  delay(20);
-  // Code to open the scooper
-  setArmPosition(20, 210, 180);
+  setArmPosition(100, 100); // Change values (Base forward, middle 90)
   delay(100);
+  extendScooper(45, 100);
+  delay(100);
+  // Code to open the scooper
+  // openScooper(45, 100)
+  setArmPosition(20, 210); // Change values (Base forward, middle forwards)
+  extendScooper(135, 100);
+  delay(300);
   // Code to close the scooper
-  setArmPosition(20, 210, 90);
-  delay(20);
+  // openScooper(135, 100)
+  delay(200);
   setArmClosed();  
 }
 
@@ -141,12 +149,24 @@ void stopMotors() {
   delay(100);
 }
 
-void setArmPosition(int angle1, int angle2, int angle3) {
+void setArmPosition(int angle1, int angle2) {
   angle1 = constrain(angle1, 0, 270);
   angle2 = constrain(angle2, 0, 270);
-  angle3 = constrain(angle3, 0, 270);
 
   servo1.writeMicroseconds(map(angle1, 0, 270, 500, 2500));
   servo2.writeMicroseconds(map(angle2, 0, 270, 500, 2500));
-  servo3.writeMicroseconds(map(angle3, 0, 270, 500, 2500));
 }
+
+void extendScooper(int speed, int duration) {
+  servo3.write(speed);
+  delay(duration);
+  servo3.write(90);
+}
+
+/*
+void openScooper(int speed, int duration) {
+  servo3.write(speed);
+  delay(duration);
+  servo3.write(90);
+}
+*/
