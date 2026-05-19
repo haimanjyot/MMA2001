@@ -16,7 +16,7 @@ Servo servo3;
 
 //Servo servo3;
 
- 
+
 
 const int SERVO1_PIN = 9;
 
@@ -32,21 +32,21 @@ const int SERVO3_PIN = 34;
 
 const int dirA = 13;
 
-const int pwmA = 11;  
+const int pwmA = 11;
 
 
 
 //M2
 
-const int dirB = 8;    
+const int dirB = 8;
 
-const int pwmB = 3;    
+const int pwmB = 3;
 
 //M3 - Used to control servos
 
-const int dirS = 12;    
+const int dirS = 12;
 
-const int pwmS = 5;   
+const int pwmS = 5;
 
 const int buttonPin = 22;
 const int buttonPinTop = 23;
@@ -93,19 +93,19 @@ int servo3Angle = 90;
 
 
 
-const float PITCH_IMPACT_THRESHOLD = 1.5; //rad/s --- if greater than this, then we have hit the ramp, has to be changed accordingly
+const float PITCH_IMPACT_THRESHOLD = 1.5;  //rad/s --- if greater than this, then we have hit the ramp, has to be changed accordingly
 
 const float ROLL_IMPACT_THRESHOLD = 0.8;  //rad/s --- if greater than this, we hit the ramp at an angle, has to be changed accordingly
 
-const float ROLL_CORRECTION_TOLERANCE = 2.0; //degrees --- degrees of centre, has to be changed accordingly
+const float ROLL_CORRECTION_TOLERANCE = 2.0;  //degrees --- degrees of centre, has to be changed accordingly
 
 
 
-const unsigned long TIME_FOR_90_DEG = 300; //Unsure about this
+const unsigned long TIME_FOR_90_DEG = 300;  //Unsure about this
 
-const float TIME_PER_CM = 50.0; //Unsure about this
+const float TIME_PER_CM = 50.0;  //Unsure about this
 
-const float RAMP_TIME_PER_CM = 70.0; //also unsure aabout this, this is higher cuz gravity
+const float RAMP_TIME_PER_CM = 70.0;  //also unsure aabout this, this is higher cuz gravity
 
 
 
@@ -120,7 +120,7 @@ const float RAMP_LENGTH = 120.0;
 
 
 void setup() {
-  
+
   Serial.begin(115200);
 
   digitalWrite(dirS, HIGH);
@@ -129,7 +129,7 @@ void setup() {
   servo1.attach(SERVO1_PIN);
   servo2.attach(SERVO2_PIN);
   servo3.attach(SERVO3_PIN);
-  
+
   /*
 
   if (!mpu.begin()) {
@@ -160,7 +160,7 @@ void setup() {
 
   pinMode(pwmA, OUTPUT);
 
-  
+
 
   pinMode(dirB, OUTPUT);
 
@@ -175,11 +175,10 @@ void setup() {
   analogWrite(pwmA, 0);
 
   analogWrite(pwmB, 0);
-  
-  while (digitalRead(buttonPin) == HIGH){
 
+  while (digitalRead(buttonPin) == HIGH) {
   }
-  
+
 
   forward(6000);
   delay(500);
@@ -187,7 +186,7 @@ void setup() {
   delay(500);
 
 
-  
+
   turnRight(TIME_FOR_90_DEG);
 
   delay(500);
@@ -210,14 +209,12 @@ void setup() {
   delay(10000);
   stopHopper();
 
-  while (digitalRead(buttonPinTop) == HIGH){
-
+  while (digitalRead(buttonPinTop) == HIGH) {
   }
 
   setArmPosition(180, 200);
   delay(300);
   setArmPosition(180, 180);
-  
 }
 
 
@@ -225,9 +222,6 @@ void setup() {
 void loop() {
 
   // put your main code here, to run repeatedly:
-
-
-
 }
 
 
@@ -236,16 +230,15 @@ void loop() {
 
 void setMotorsContinuous(int speedA, int speedB) {
 
-  digitalWrite(dirA, HIGH); 
+  digitalWrite(dirA, HIGH);
 
   digitalWrite(dirB, LOW);
 
-  
+
 
   analogWrite(pwmA, speedA);
 
   analogWrite(pwmB, speedB);
-
 }
 
 
@@ -269,7 +262,6 @@ void turnRight(long time) {
 
 
   stopMotors();
-
 }
 
 
@@ -293,7 +285,6 @@ void turnLeft(long time) {
 
 
   stopMotors();
-
 }
 
 void forward(long time) {
@@ -315,7 +306,6 @@ void forward(long time) {
 
 
   stopMotors();
-
 }
 
 
@@ -339,7 +329,6 @@ void backward(long time) {
 
 
   stopMotors();
-
 }
 
 
@@ -348,12 +337,11 @@ void stopMotors() {
 
   analogWrite(pwmA, 0);
 
-  analogWrite(pwmB, 0); 
+  analogWrite(pwmB, 0);
 
 
 
   delay(100);
-
 }
 
 
@@ -364,7 +352,7 @@ bool moveForwardUntilBump(float distance_cm, int speed) {
 
   digitalWrite(dirB, HIGH);
 
-  
+
 
   analogWrite(pwmA, speed);
 
@@ -380,24 +368,21 @@ bool moveForwardUntilBump(float distance_cm, int speed) {
 
   while (millis() - startTime < travelTime) {
 
-    
+
 
     if (digitalRead(buttonPin) == LOW) {
 
       stopMotors();
 
       return true;
-
     }
-
   }
 
-  
+
 
   stopMotors();
 
-  return false; 
-
+  return false;
 }
 
 
@@ -408,26 +393,25 @@ void setArmPosition(int angle1, int angle2) {
 
   angle2 = constrain(angle2, 0, 270);
 
-  
+
 
   servo1.writeMicroseconds(map(angle1, 0, 270, 500, 2500));
 
   servo2.writeMicroseconds(map(angle2, 0, 270, 500, 2500));
-
 }
 
 void runHopper(int speedPercent) {
   // Constrain to prevent invalid inputs
   speedPercent = constrain(speedPercent, -100, 100);
-  
+
   // Map the percentage (-100 to 100) to standard servo pulse widths (1000us to 2000us)
   // 1500 is the exact center (stop)
   int pulseWidth = map(speedPercent, -100, 100, 1000, 2000);
-  
+
   servo3.writeMicroseconds(pulseWidth);
 }
 
 void stopHopper() {
   // Sending exactly 1500 microseconds tells a continuous servo to stop moving
-  servo3.writeMicroseconds(1500); 
+  servo3.writeMicroseconds(1500);
 }
