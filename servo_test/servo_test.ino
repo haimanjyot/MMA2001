@@ -158,9 +158,9 @@ void setArmPosition(int angle1, int angle2) {
 }
 
 void extendScooper(int speed, int duration) {
-  servo3.write(speed);
+  servo3.writeMicroseconds(speed);
   delay(duration);
-  servo3.write(90);
+  servo3.writeMicroseconds(90);
 }
 
 /*

@@ -1,3 +1,8 @@
+/*
+It takes 15 seconds to move ~125cm so that's ~8.3cm/s
+So we need to run it for ~12s to move 1m
+*/
+
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
@@ -53,9 +58,9 @@ int servo1Angle = 135;
 int servo2Angle = 135;
 int servo3Angle = 90;
 
-const float PITCH_IMPACT_THRESHOLD = 1.5;  //rad/s --- if greater than this, then we have hit the ramp, has to be changed accordingly
-const float ROLL_IMPACT_THRESHOLD = 0.8;  //rad/s --- if greater than this, we hit the ramp at an angle, has to be changed accordingly
-const float ROLL_CORRECTION_TOLERANCE = 2.0;  //degrees --- degrees of centre, has to be changed accordingly
+const float PITCH_IMPACT_THRESHOLD = 1.5;  // rad/s --- if greater than this, then we have hit the ramp, has to be changed accordingly
+const float ROLL_IMPACT_THRESHOLD = 0.8;  // rad/s --- if greater than this, we hit the ramp at an angle, has to be changed accordingly
+const float ROLL_CORRECTION_TOLERANCE = 2.0;  // degrees --- degrees of centre, has to be changed accordingly
 
 const unsigned long TIME_FOR_90_DEG = 300;  //Unsure about this
 
@@ -65,6 +70,9 @@ const float RAMP_LENGTH = 120.0;
 
 
 void setup() {
+  pinMode(dirS, OUTPUT);
+  pinMode(pwmS, OUTPUT);
+
   Serial.begin(115200);
 
   digitalWrite(dirS, HIGH);
@@ -100,10 +108,21 @@ void setup() {
   analogWrite(pwmA, 0);
   analogWrite(pwmB, 0);
 
+  setArmPosition(190,200); // Should be stowed away
+  delay(10000);
+
+  setArmPosition(40, 45); // Should be straight up
+  delay(10000);
+
+  setArmPosition(190, 200); // Should be fully extended
+  delay(5000);
+
+
   while (digitalRead(buttonPin) == HIGH) {
   }
 
-  forward(6000);
+  //forward(15000);
+  /*
   delay(500);
   backward(6000);
   delay(500);
@@ -111,6 +130,7 @@ void setup() {
   turnRight(TIME_FOR_90_DEG);
 
   delay(500);
+  */
 
   /*
   bool hitObstacle = moveForwardUntilBump(50.0, driveSpeed);
@@ -122,7 +142,7 @@ void setup() {
     moveForwardUntilBump(10.0, slowSpeed);
 
   }
-  */
+  
   delay(300);
   setArmPosition(180, 180);
   delay(300);
@@ -136,6 +156,7 @@ void setup() {
   setArmPosition(180, 200);
   delay(300);
   setArmPosition(180, 180);
+  */
 }
 
 void loop() {
