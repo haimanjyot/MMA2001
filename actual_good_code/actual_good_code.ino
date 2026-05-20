@@ -58,13 +58,13 @@ int servo1Angle = 135;
 int servo2Angle = 135;
 int servo3Angle = 90;
 
-const float PITCH_IMPACT_THRESHOLD = 1.5;  // rad/s --- if greater than this, then we have hit the ramp, has to be changed accordingly
-const float ROLL_IMPACT_THRESHOLD = 0.8;  // rad/s --- if greater than this, we hit the ramp at an angle, has to be changed accordingly
+const float PITCH_IMPACT_THRESHOLD = 1.5;     // rad/s --- if greater than this, then we have hit the ramp, has to be changed accordingly
+const float ROLL_IMPACT_THRESHOLD = 0.8;      // rad/s --- if greater than this, we hit the ramp at an angle, has to be changed accordingly
 const float ROLL_CORRECTION_TOLERANCE = 2.0;  // degrees --- degrees of centre, has to be changed accordingly
 
 const unsigned long TIME_FOR_90_DEG = 300;  //Unsure about this
 
-const float TIME_PER_CM = 50.0;  //Unsure about this
+const float TIME_PER_CM = 50.0;       //Unsure about this
 const float RAMP_TIME_PER_CM = 70.0;  //also unsure aabout this, this is higher cuz gravity
 const float RAMP_LENGTH = 120.0;
 
@@ -118,12 +118,10 @@ void setup() {
 
   stowawayEverything();
   */
-  /*
-  while (digitalRead(buttonPin) == LOW) {
-    forward(5000);
-  }
-  */
-  
+
+
+
+
 
   //forward(15000);
   /*
@@ -165,8 +163,13 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  int val = digitalRead(buttonPin);
+  int val = digitalRead(buttonPin);  // Takes 8 seconds to come back to 0 for some reason
   Serial.println(val);
+
+  if (digitalRead(buttonPin) == HIGH) {
+    forward(5000);
+  }
+
   delay(100);
 }
 
@@ -285,14 +288,14 @@ void stopHopper() {
 }
 
 void stowawayEverything() {
-  setArmPosition(190,200); // Should be stowed away
+  setArmPosition(190, 200);  // Should be stowed away
   delay(10000);
 }
 
 void pickUpRocks() {
-  setArmPosition(110, 120); // Should be straight up
+  setArmPosition(110, 120);  // Should be straight up
   delay(4000);
-  setArmPosition(40, 45); // Should be straight up
+  setArmPosition(40, 45);  // Should be straight up
   delay(10000);
 }
 

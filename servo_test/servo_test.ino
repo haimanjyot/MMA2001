@@ -79,19 +79,19 @@ void setArmClosed() {
 }
 
 void pickUpRocks() {
-  setArmPosition(100, 100); // Change values (Base forward, middle 90)
+  //setArmPosition(100, 100); // Change values (Base forward, middle 90)
   delay(100);
-  extendScooper(45, 100);
+  //extendScooper(45, 100);
   delay(100);
   // Code to open the scooper
   // openScooper(45, 100)
-  setArmPosition(20, 210); // Change values (Base forward, middle forwards)
+  //setArmPosition(20, 210); // Change values (Base forward, middle forwards)
   extendScooper(135, 100);
   delay(300);
   // Code to close the scooper
   // openScooper(135, 100)
   delay(200);
-  setArmClosed();  
+  //setArmClosed();  
 }
 
 void turnRight(long time) {
