@@ -108,14 +108,11 @@ void setup() {
   analogWrite(pwmA, 0);
   analogWrite(pwmB, 0);
 
-  setArmPosition(190,200); // Should be stowed away
-  delay(10000);
+  stowawayEverything();
 
-  setArmPosition(40, 45); // Should be straight up
-  delay(10000);
+  pickUpRocks();  
 
-  setArmPosition(190, 200); // Should be fully extended
-  delay(5000);
+  stowawayEverything();
 
 
   while (digitalRead(buttonPin) == HIGH) {
@@ -275,4 +272,16 @@ void runHopper(int speedPercent) {
 void stopHopper() {
   // Sending exactly 1500 microseconds tells a continuous servo to stop moving
   servo3.writeMicroseconds(1500);
+}
+
+void stowawayEverything() {
+  setArmPosition(190,200); // Should be stowed away
+  delay(10000);
+}
+
+void pickUpRocks() {
+  setArmPosition(110, 120); // Should be straight up
+  delay(4000);
+  setArmPosition(40, 45); // Should be straight up
+  delay(10000);
 }
