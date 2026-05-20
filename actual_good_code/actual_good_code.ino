@@ -29,7 +29,7 @@ const int pwmB = 3;
 const int dirS = 12;
 const int pwmS = 5;
 
-const int buttonPin = 52;
+const int buttonPin = 22;
 const int buttonPinTop = 53;
 
 
@@ -102,21 +102,28 @@ void setup() {
   pinMode(dirB, OUTPUT);
   pinMode(pwmB, OUTPUT);
 
-  pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(buttonPin, INPUT);
   pinMode(buttonPinTop, INPUT_PULLUP);
 
   analogWrite(pwmA, 0);
   analogWrite(pwmB, 0);
 
+  //stowawayEverything();
+
+  //extendScooper(90, 2000);
+  /*
   stowawayEverything();
 
   pickUpRocks();  
 
   stowawayEverything();
-
-
-  while (digitalRead(buttonPin) == HIGH) {
+  */
+  /*
+  while (digitalRead(buttonPin) == LOW) {
+    forward(5000);
   }
+  */
+  
 
   //forward(15000);
   /*
@@ -158,6 +165,9 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  int val = digitalRead(buttonPin);
+  Serial.println(val);
+  delay(100);
 }
 
 
@@ -284,4 +294,10 @@ void pickUpRocks() {
   delay(4000);
   setArmPosition(40, 45); // Should be straight up
   delay(10000);
+}
+
+void extendScooper(int speed, int duration) {
+  servo3.writeMicroseconds(speed);
+  delay(duration);
+  servo3.writeMicroseconds(90);
 }
